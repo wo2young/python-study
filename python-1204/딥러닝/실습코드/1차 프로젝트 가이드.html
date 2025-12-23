@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>심층 데이터 분석 1차 프로젝트 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap");
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background-color: #ffffff;
+        color: #1c1917;
+      }
+
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 300px;
+      }
+
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background-color: white !important;
+          margin: 0;
+          padding: 0;
+        }
+        main {
+          display: block !important;
+        }
+        section {
+          page-break-inside: auto;
+          border-bottom: 1px solid #e5e7eb;
+          padding-bottom: 2rem;
+          margin-bottom: 2rem;
+        }
+        a {
+          text-decoration: underline;
+          color: #0d9488 !important;
+        }
+        h1,
+        h2,
+        h3 {
+          page-break-after: avoid;
+        }
+      }
+    </style>
+    <!-- Chosen Palette: Warm Neutral (Stone) + Teal Accent. 
+         Rationale: Focuses on professional clarity and ease of reading for technical documentation. -->
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <nav
+      class="bg-white shadow-sm sticky top-0 z-50 no-print border-b border-stone-200"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <i class="fas fa-rocket text-teal-600 text-2xl mr-3"></i>
+            <span class="font-bold text-xl tracking-tight text-stone-800"
+              >K-Digital <span class="text-teal-600">1차</span> 프로젝트
+              가이드</span
+            >
+          </div>
+          <div class="flex items-center">
+            <button
+              onclick="window.print()"
+              class="bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-teal-700 transition"
+            >
+              <i class="fas fa-print mr-2"></i> 가이드 PDF 저장/인쇄
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="bg-white border-b border-stone-200 py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div
+          class="inline-block px-4 py-1.5 mb-6 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-sm font-bold tracking-wide"
+        >
+          STEP 01: CORE ANALYSIS & HYBRID INTEGRATION
+        </div>
+        <h1
+          class="text-3xl font-extrabold text-stone-900 sm:text-4xl lg:text-5xl"
+        >
+          심층 데이터 분석 기반 서비스 솔루션 개발
+        </h1>
+        <p class="mt-4 max-w-3xl mx-auto text-lg text-stone-600 font-medium">
+          [1차 프로젝트] Java/Spring 웹 역량 + TensorFlow 딥러닝 + Gemini/OpenAI
+          API 연동
+        </p>
+      </div>
+    </header>
+
+    <main
+      class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20"
+    >
+      <!-- Principles -->
+      <section id="principles">
+        <div class="text-center mb-10">
+          <h2
+            class="text-2xl font-bold text-stone-900 flex items-center justify-center"
+          >
+            <i class="fas fa-shield-alt text-teal-500 mr-3"></i> 프로젝트 성공
+            5계명
+          </h2>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-5 gap-4"
+          id="principles-container"
+        ></div>
+      </section>
+
+      <!-- Project Explorer -->
+      <section id="projects">
+        <div class="text-center mb-10">
+          <h2
+            class="text-2xl font-bold text-stone-900 mb-2 underline decoration-teal-500 underline-offset-8"
+          >
+            프로젝트 주제 예시 및 데이터 출처
+          </h2>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+          id="projects-grid"
+        ></div>
+      </section>
+
+      <!-- Schedule -->
+      <section id="schedule">
+        <div class="flex flex-col lg:flex-row gap-10">
+          <div class="lg:w-1/3">
+            <h2 class="text-2xl font-bold text-stone-900 mb-6">
+              프로젝트 상세 일정
+            </h2>
+            <div
+              class="bg-stone-50 p-6 rounded-xl border border-stone-200 mb-6"
+            >
+              <div class="chart-container">
+                <canvas id="scheduleChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="lg:w-2/3 space-y-2">
+            <h3
+              class="text-lg font-bold text-stone-800 mb-4 text-center lg:text-left"
+            >
+              일자별 과업 및 산출물 연동
+            </h3>
+            <div id="timeline-container" class="space-y-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Roles -->
+      <section id="roles">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl font-bold text-stone-900">
+            팀원별 역할 분담 (R&R)
+          </h2>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-6"
+          id="roles-container"
+        ></div>
+      </section>
+
+      <!-- Deliverables Series -->
+      <section id="deliverables">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl font-bold text-stone-900">
+            프로젝트 산출물 시리즈
+          </h2>
+          <p class="text-sm text-stone-500">
+            기획부터 발표까지, 포트폴리오의 퀄리티를 결정하는 핵심 문서들입니다.
+          </p>
+        </div>
+        <div
+          class="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm"
+        >
+          <table class="min-w-full divide-y divide-stone-200">
+            <thead class="bg-stone-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-bold text-stone-500 uppercase"
+                >
+                  단계
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-bold text-stone-500 uppercase"
+                >
+                  핵심 산출물
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-bold text-stone-500 uppercase"
+                >
+                  주요 포함 내용
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="bg-white divide-y divide-stone-200 text-sm text-stone-700"
+              id="deliverables-body"
+            ></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Architecture -->
+      <section id="tech">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl font-bold text-stone-900">핵심 기술 아키텍처</h2>
+        </div>
+        <div
+          class="bg-stone-900 text-white p-8 rounded-2xl shadow-xl overflow-hidden"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+              <h3 class="text-teal-400 font-bold text-lg mb-4">
+                Enterprise Hybrid Architecture
+              </h3>
+              <p class="text-stone-400 text-sm leading-relaxed mb-6">
+                Spring Boot 서버가 메인 비즈니스와 로그를 관리하며, Python
+                기반의 AI 추론 엔진이 모델 서비스를 담당하는 MSA 지향형
+                아키텍처입니다.
+              </p>
+              <div class="grid grid-cols-2 gap-4 text-xs">
+                <div
+                  class="bg-stone-800 p-3 rounded-lg border border-stone-700"
+                >
+                  <span class="text-teal-300 font-bold block mb-1"
+                    >AI Engine</span
+                  >
+                  TensorFlow/Keras, YOLOv8/11
+                </div>
+                <div
+                  class="bg-stone-800 p-3 rounded-lg border border-stone-700"
+                >
+                  <span class="text-teal-300 font-bold block mb-1"
+                    >AI Serving</span
+                  >
+                  FastAPI (Uvicorn)
+                </div>
+                <div
+                  class="bg-stone-800 p-3 rounded-lg border border-stone-700"
+                >
+                  <span class="text-teal-300 font-bold block mb-1"
+                    >Web Backend</span
+                  >
+                  Java 17+, Spring Boot 3.x
+                </div>
+                <div
+                  class="bg-stone-800 p-3 rounded-lg border border-stone-700"
+                >
+                  <span class="text-teal-300 font-bold block mb-1"
+                    >Database</span
+                  >
+                  MySQL, PostgreSQL, MongoDB
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col justify-center items-center space-y-4">
+              <div
+                class="w-full max-w-xs p-3 border border-stone-700 rounded-lg text-center bg-stone-800"
+              >
+                <i class="fas fa-desktop text-xl mb-2"></i>
+                <div class="text-xs font-bold">Client (React/Vue)</div>
+              </div>
+              <i class="fas fa-arrow-down text-stone-600 text-sm"></i>
+              <div
+                class="w-full max-w-xs p-3 border-2 border-teal-500 rounded-lg text-center bg-teal-950"
+              >
+                <i class="fas fa-leaf text-xl text-teal-400 mb-2"></i>
+                <div class="text-xs font-bold text-white">
+                  Spring Boot (Main API)
+                </div>
+              </div>
+              <div class="flex w-full max-w-xs gap-4">
+                <div
+                  class="flex-1 p-2 bg-stone-800 border border-stone-700 rounded-lg text-center"
+                >
+                  <i class="fas fa-database text-yellow-500 text-sm mb-1"></i>
+                  <div class="text-[9px] font-bold">Data Store</div>
+                </div>
+                <div
+                  class="flex-1 p-2 bg-blue-900 border border-blue-700 rounded-lg text-center"
+                >
+                  <i class="fab fa-python text-blue-300 text-sm mb-1"></i>
+                  <div class="text-[9px] font-bold text-white">
+                    FastAPI (AI)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="bg-white border-t border-stone-200 py-8 no-print text-center text-stone-400 text-xs"
+    >
+      <p>&copy; 2025 K-Digital 1차 프로젝트 가이드.</p>
+    </footer>
+
+    <script>
+      // --- Data Store ---
+      const principles = [
+        {
+          icon: "fa-search",
+          title: "데이터셋 정밀 검증",
+          desc: "주제별 최소 2개 이상의 출처 확보 및 형태 파악",
+        },
+        {
+          icon: "fa-layer-group",
+          title: "딥러닝 아키텍처",
+          desc: "TensorFlow 신경망 및 YOLOv8/11 최신 모델 적용",
+        },
+        {
+          icon: "fa-comment-alt",
+          title: "지능형 리포트",
+          desc: "LLM(Gemini/OpenAI) API 연동 데이터 인사이트 도출",
+        },
+        {
+          icon: "fa-exchange-alt",
+          title: "서버 간 유기적 통신",
+          desc: "FastAPI와 Spring Boot 간의 RESTful 연동 설계",
+        },
+        {
+          icon: "fa-file-alt",
+          title: "6단계 산출물 시리즈",
+          desc: "요구사항부터 발표자료까지 포트폴리오 문서화",
+        },
+      ];
+
+      const projects = [
+        {
+          category: "Infra (Vision)",
+          title: "도로 파손(포트홀) 탐지 시스템",
+          tech: "YOLOv8 / YOLO11",
+          ai_usage: "파손 부위 및 종류 탐지 후 지자체 민원 양식 자동 생성",
+          urls: [
+            {
+              label: "Roboflow Universe (Pothole v2)",
+              link: "https://universe.roboflow.com/atilim-university/pothole-detection-gj87p",
+            },
+            {
+              label: "Kaggle (Stable Mirror)",
+              link: "https://www.kaggle.com/datasets/atulyakumar98/pothole-detection-dataset",
+            },
+          ],
+        },
+        {
+          category: "Health (Tabular)",
+          title: "심혈관 및 뇌졸중 발병 위험도 예측",
+          tech: "TensorFlow (MLP / DNN)",
+          ai_usage: "사용자 건강 지표 분석 후 맞춤형 생활 수칙 가이드 제공",
+          urls: [
+            {
+              label: "Kaggle (Heart Failure Prediction)",
+              link: "https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction-dataset",
+            },
+            {
+              label: "Kaggle (Stroke Prediction Data)",
+              link: "https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset",
+            },
+          ],
+        },
+        {
+          category: "Smart City (Vision)",
+          title: "주차장 공석 실시간 모니터링",
+          tech: "YOLOv8 / TensorFlow CNN",
+          ai_usage: "주차 현황 분석 및 혼잡 시간대 예측 리포트 생성",
+          urls: [
+            {
+              label: "Roboflow (PKLot Official)",
+              link: "https://universe.roboflow.com/university-of-parana/pklot",
+            },
+            {
+              label: "Kaggle (PKLot Dataset Mirror)",
+              link: "https://www.kaggle.com/datasets/laratf/pklot-dataset",
+            },
+          ],
+        },
+        {
+          category: "Safety (Vision)",
+          title: "산업현장 안전 장비 착용 감지",
+          tech: "YOLOv8 / YOLO11",
+          ai_usage: "안전모/조끼 미착용자 발생 시 긴급 경고 방송 대본 요약",
+          urls: [
+            {
+              label: "Roboflow PPE Dataset",
+              link: "https://universe.roboflow.com/roboflow-universe-projects/construction-site-safety-r9q7f",
+            },
+          ],
+        },
+        {
+          category: "Safety (Vision)",
+          title: "졸음 운전 및 전방 태만 모니터링",
+          tech: "TensorFlow (CNN)",
+          ai_usage: "운전자 상태 분석 후 인근 휴게소 안내 및 스트레칭 가이드",
+          urls: [
+            {
+              label: "Kaggle Drowsiness Dataset",
+              link: "https://www.kaggle.com/datasets/dheerajperumandla/drowsiness-dataset",
+            },
+          ],
+        },
+        {
+          category: "Security (Tabular)",
+          title: "신용카드 부정 사용(FDS) 탐지",
+          tech: "TensorFlow (DNN)",
+          ai_usage: "이상 거래 패턴 분석 후 관리자용 의심 사유 보고서 작성",
+          urls: [
+            {
+              label: "Kaggle Credit Card Fraud",
+              link: "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud",
+            },
+          ],
+        },
+        {
+          category: "Security (NLP/Tabular)",
+          title: "스팸 및 가짜 뉴스 판별 서비스",
+          tech: "Gemini / OpenAI API",
+          ai_usage: "기사 내용의 신뢰도 점수 산출 및 비판적 읽기 요약",
+          urls: [
+            {
+              label: "Kaggle Fake News Dataset",
+              link: "https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset",
+            },
+          ],
+        },
+        {
+          category: "Disaster (Vision)",
+          title: "실시간 화재 및 연기 통합 관제",
+          tech: "YOLOv8 / YOLO11",
+          ai_usage: "화재 규모 판단 후 인근 소방서 신고 텍스트 자동 생성",
+          urls: [
+            {
+              label: "Kaggle Fire Dataset",
+              link: "https://www.kaggle.com/datasets/phylake1337/fire-dataset",
+            },
+          ],
+        },
+        {
+          category: "Maintenance (Tabular)",
+          title: "기계 설비 잔여 수명(RUL) 예측",
+          tech: "TensorFlow (MLP / DNN)",
+          ai_usage: "고장 징후 포착 시 기계 매뉴얼 기반 점검 가이드 생성",
+          urls: [
+            {
+              label: "Kaggle NASA C-MAPSS Data",
+              link: "https://www.kaggle.com/datasets/behrad37/nasa-cmaps",
+            },
+          ],
+        },
+        {
+          category: "Energy (Tabular)",
+          title: "태양광 발전량 및 고장 전조 예측",
+          tech: "TensorFlow (MLP / DNN)",
+          ai_usage: "발전 효율 저하 원인 분석 및 유지보수 일정 제안",
+          urls: [
+            {
+              label: "Kaggle Solar Power Data",
+              link: "https://www.kaggle.com/datasets/anikannal/solar-power-generation-data",
+            },
+          ],
+        },
+      ];
+
+      const scheduleData = [
+        {
+          date: "12/23 (화)",
+          phase: "기획",
+          task: "팀 빌딩, 주제 확정, 데이터셋 확보",
+          deliverable: "요구사항 정의서",
+        },
+        {
+          date: "12/24 (수)",
+          phase: "설계",
+          task: "EDA 수행 및 시스템 아키텍처/DB 설계",
+          deliverable: "아키텍처 설계서",
+        },
+        {
+          date: "12/25 (목)",
+          phase: "휴무",
+          task: "🎄 성탄절",
+          deliverable: "-",
+        },
+        {
+          date: "12/26 (금)",
+          phase: "학습",
+          task: "TensorFlow 기반 Baseline 모델 개발",
+          deliverable: "모델 학습 결과서",
+        },
+        {
+          date: "12/29 (월)",
+          phase: "발표",
+          task: "중간 프로젝트 기획 발표 및 피드백",
+          deliverable: "최종 계획서",
+          highlight: true,
+        },
+        {
+          date: "12/30 (화)",
+          phase: "서버",
+          task: "Python FastAPI 인프라 및 추론 API 구축",
+          deliverable: "API 명세서",
+        },
+        {
+          date: "12/31 (수)",
+          phase: "웹",
+          task: "Java/Spring Boot 연동 및 로그 DB 처리",
+          deliverable: "DB 설계서",
+        },
+        { date: "1/1 (목)", phase: "휴무", task: "🌅 신정", deliverable: "-" },
+        {
+          date: "1/2 (금)",
+          phase: "통합",
+          task: "React/Vue 대시보드 UI 및 실시간 연동",
+          deliverable: "UI/UX 설계서",
+        },
+        {
+          date: "1/5 (월)",
+          phase: "지능화",
+          task: "LLM(Gemini/OpenAI) 리포트 기능 고도화",
+          deliverable: "LLM 가이드",
+        },
+        {
+          date: "1/6 ~ 1/7",
+          phase: "테스트",
+          task: "전체 시스템 통합 테스트 및 버그 수정",
+          deliverable: "테스트 결과서",
+        },
+        {
+          date: "1/8 (목)",
+          phase: "발표준비",
+          task: "발표 자료 및 시연 영상 최종 제작",
+          deliverable: "발표 슬라이드",
+        },
+        {
+          date: "1/9 (금)",
+          phase: "최종발표",
+          task: "최종 결과 시연 및 성과 공유",
+          deliverable: "최종 프로젝트 보고서",
+          highlight: true,
+        },
+      ];
+
+      const rolesData = [
+        {
+          role: "AI Specialist",
+          icon: "fa-brain",
+          tasks: [
+            "데이터 전처리/증강",
+            "TensorFlow 신경망 구현",
+            "YOLOv8/11 모델링",
+            "FastAPI 추론 서버 개발",
+          ],
+        },
+        {
+          role: "Backend & LLM",
+          icon: "fa-server",
+          tasks: [
+            "Spring Boot 로직 구현",
+            "데이터베이스 설계(ERD)",
+            "서버 간 통신(WebClient)",
+            "Gemini/OpenAI 프롬프트 제어",
+          ],
+        },
+        {
+          role: "Frontend & UI",
+          icon: "fa-desktop",
+          tasks: [
+            "대시보드 UI 인터페이스 구축",
+            "Chart.js 데이터 시각화",
+            "실시간 위반 알림 UI",
+            "전체 사용자 흐름 설계",
+          ],
+        },
+      ];
+
+      const deliverables = [
+        {
+          category: "01. 기획 단계",
+          name: "요구사항 정의서",
+          content:
+            "프로젝트 배경, 사용자 타겟 분석, 기능 요구사항 및 비기능 요구사항 정의",
+        },
+        {
+          category: "02. 설계 단계",
+          name: "시스템 아키텍처 설계서",
+          content:
+            "Java/Spring과 Python 서버 간의 데이터 흐름 및 전체 인프라 구성도",
+        },
+        {
+          category: "03. 데이터/DB",
+          name: "데이터베이스 설계서 (ERD)",
+          content:
+            "사용자 로그, AI 탐지 결과, LLM 생성 리포트를 저장할 테이블 구조",
+        },
+        {
+          category: "04. 개발 단계",
+          name: "API 명세서 (Swagger)",
+          content: "프론트-백엔드-AI 추론 서버 간의 REST API 인터페이스 규격",
+        },
+        {
+          category: "05. AI 모델링",
+          name: "모델 학습 및 평가 결과서",
+          content:
+            "학습 곡선(Loss/Acc), 정밀도/재현율, 모델 구조 및 테스트 결과",
+        },
+        {
+          category: "06. 최종 결과",
+          name: "발표 자료 및 시연 영상",
+          content:
+            "기술적 도전 과제, 트러블슈팅, 최종 구동 시나리오를 담은 자료",
+        },
+      ];
+
+      // --- Render Logic ---
+
+      function renderAll() {
+        // Principles
+        const pContainer = document.getElementById("principles-container");
+        principles.forEach((p) => {
+          pContainer.innerHTML += `
+                    <div class="p-4 border border-stone-100 rounded-lg text-center bg-stone-50">
+                        <i class="fas ${p.icon} text-teal-600 text-xl mb-2"></i>
+                        <h4 class="text-sm font-bold text-stone-800 mb-1">${p.title}</h4>
+                        <p class="text-[10px] text-stone-500">${p.desc}</p>
+                    </div>
+                `;
+        });
+
+        // Projects with MULTI-URLs
+        const projGrid = document.getElementById("projects-grid");
+        projects.forEach((p) => {
+          let urlHtml = p.urls
+            .map(
+              (u) => `
+                    <div class="mb-3 last:mb-0">
+                        <label class="text-[9px] text-stone-400 font-bold block mb-1 uppercase tracking-tighter">${u.label} (복사용 URL)</label>
+                        <div class="bg-stone-50 p-2 rounded border border-stone-200 text-[10px] break-all font-mono text-stone-600 select-all leading-tight mb-1">
+                            ${u.link}
+                        </div>
+                        <a href="${u.link}" target="_blank" class="text-[10px] text-teal-600 inline-block hover:underline no-print font-bold">
+                            <i class="fas fa-external-link-alt mr-1"></i> 데이터셋 상세 페이지 이동
+                        </a>
+                    </div>
+                `
+            )
+            .join("");
+
+          projGrid.innerHTML += `
+                    <div class="p-6 border-2 border-stone-200 rounded-2xl bg-white shadow-sm flex flex-col h-full hover:border-teal-400 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold px-2 py-1 bg-stone-100 text-stone-500 rounded uppercase tracking-wider">${p.category}</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-stone-900 mb-4">${p.title}</h4>
+                        <div class="mb-6 space-y-4">
+                            ${urlHtml}
+                        </div>
+                        <div class="pt-4 border-t border-dashed border-stone-200 space-y-2 mt-auto">
+                            <div class="flex items-center text-[11px] text-stone-700">
+                                <i class="fas fa-microchip w-6 text-stone-400"></i> <strong class="mr-2">주요기술:</strong> ${p.tech}
+                            </div>
+                            <div class="flex items-start text-[11px] text-stone-500">
+                                <i class="fas fa-magic w-6 text-stone-400 mt-0.5"></i> <span><strong class="text-stone-700">AI 응용:</strong> ${p.ai_usage}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+
+        // Timeline
+        const tlContainer = document.getElementById("timeline-container");
+        scheduleData.forEach((s) => {
+          const isHighlight = s.highlight
+            ? "bg-teal-50 border-teal-500 border-2"
+            : "bg-white border-stone-200";
+          const isHoliday = s.phase === "휴무" ? "opacity-40" : "";
+          tlContainer.innerHTML += `
+                    <div class="flex items-center gap-4 p-3 border rounded-lg ${isHighlight} ${isHoliday}">
+                        <div class="w-24 flex-shrink-0 text-xs font-bold text-stone-800">${
+                          s.date
+                        }</div>
+                        <div class="w-20 flex-shrink-0 text-[10px] text-stone-400 font-bold uppercase">${
+                          s.phase
+                        }</div>
+                        <div class="flex-grow text-xs text-stone-700 font-medium">${
+                          s.task
+                        }</div>
+                        <div class="w-32 text-right text-[10px] text-teal-600 font-bold">${
+                          s.phase === "휴무" ? "" : s.deliverable
+                        }</div>
+                    </div>
+                `;
+        });
+
+        // Roles
+        const rContainer = document.getElementById("roles-container");
+        rolesData.forEach((r) => {
+          rContainer.innerHTML += `
+                    <div class="p-6 bg-stone-50 border border-stone-200 rounded-xl">
+                        <i class="fas ${
+                          r.icon
+                        } text-teal-600 text-2xl mb-4"></i>
+                        <h4 class="font-bold text-stone-900 mb-3">${r.role}</h4>
+                        <ul class="text-xs text-stone-500 space-y-2">
+                            ${r.tasks
+                              .map(
+                                (t) =>
+                                  `<li><i class="fas fa-check text-teal-500 mr-2"></i>${t}</li>`
+                              )
+                              .join("")}
+                        </ul>
+                    </div>
+                `;
+        });
+
+        // Deliverables
+        const dBody = document.getElementById("deliverables-body");
+        deliverables.forEach((d) => {
+          dBody.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 font-bold text-stone-900 uppercase tracking-tighter whitespace-nowrap">${d.category}</td>
+                        <td class="px-6 py-4 font-medium text-teal-700">${d.name}</td>
+                        <td class="px-6 py-4 text-stone-500 text-xs">${d.content}</td>
+                    </tr>
+                `;
+        });
+      }
+
+      function renderChart() {
+        const ctx = document.getElementById("scheduleChart").getContext("2d");
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: [
+              "기획/설계",
+              "AI모델링",
+              "백엔드/DB",
+              "프론트/LLM",
+              "검증/발표",
+            ],
+            datasets: [
+              {
+                data: [15, 20, 20, 25, 20],
+                backgroundColor: [
+                  "#e7e5e4",
+                  "#2dd4bf",
+                  "#0d9488",
+                  "#115e59",
+                  "#f59e0b",
+                ],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { boxWidth: 10, font: { size: 10 } },
+              },
+            },
+          },
+        });
+      }
+
+      window.onload = () => {
+        renderAll();
+        renderChart();
+      };
+    </script>
+  </body>
+</html>
